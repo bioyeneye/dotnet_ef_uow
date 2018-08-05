@@ -1,0 +1,1 @@
+﻿{"ContextClassName":"ProjectmeetingContext","DefaultDacpacSchema":null,"IdReplace":false,"IncludeConnectionString":true,"OutputPath":"","ProjectRootNamespace":"CoreLibrary.Data","SelectedToBeGenerated":0,"Tables":["dbo.GroupMeeting"],"UseDatabaseNames":false,"UseFluentApiOnly":false,"UseHandleBars":false,"UseInflector":true}
