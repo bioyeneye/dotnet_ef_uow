@@ -7,6 +7,7 @@ using Autofac.Extensions.DependencyInjection;
 using CoreLibrary.AutoFac;
 using CoreLibrary.DataContext;
 using CoreLibrary.EntityFramework;
+using CoreLibrary.Extensions;
 using CoreLibrary.Repositories;
 using CoreLibrary.Test.AppStart;
 using CoreLibrary.Test.EF;
@@ -85,6 +86,10 @@ namespace CoreLibrary.Test
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            //library 
+            app.UseSession();
+            ApplicationContext.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
 
             app.UseMvc(routes =>
             {

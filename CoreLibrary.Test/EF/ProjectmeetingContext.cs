@@ -12,7 +12,7 @@ namespace CoreLibrary.Test.EF
             : base(options)
         {
         }
-
+         
         public virtual DbSet<GroupMeeting> GroupMeetings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
