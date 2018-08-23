@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoreLibrary.EntityFramework
 {
-    public class EntityFrameworkDataContext : DbContext, IDataContextAsync
+    public class EntityFrameworkDataContext<TContext> : DbContext, IDataContextAsync where TContext : DbContext
     {
         #region Private Fields
         private readonly Guid _instanceId;
         bool _disposed;
         #endregion Private Fields
 
-        public EntityFrameworkDataContext(DbContextOptions options)
+        public EntityFrameworkDataContext(DbContextOptions<TContext> options)
             : base(options)
         {
             _instanceId = Guid.NewGuid();

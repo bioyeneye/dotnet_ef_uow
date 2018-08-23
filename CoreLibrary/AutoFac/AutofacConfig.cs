@@ -8,7 +8,7 @@ namespace CoreLibrary.AutoFac
 {
     public static class AutofacConfig
     {
-        public static void RegisterLibraryDependencies<T>(this ContainerBuilder builder) where T: EntityFrameworkDataContext
+        public static void RegisterLibraryDependencies<T>(this ContainerBuilder builder) where T: EntityFrameworkDataContext<T>
         {
             builder.RegisterType<T>().As<IDataContextAsync>().InstancePerRequest();
             builder.RegisterType<EntityFrameorkUnitOfWork>().As<IUnitOfWorkAsync>().InstancePerRequest();

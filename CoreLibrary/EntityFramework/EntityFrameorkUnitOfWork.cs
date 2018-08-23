@@ -1,9 +1,7 @@
 ﻿#region
 
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using CoreLibrary.DataContext;
@@ -63,7 +61,7 @@ namespace CoreLibrary.EntityFramework
                     $"Repository {repositoryType.Name} not found in the IOC container. Check if it is registered during startup.");
             }
 
-            ((IRepositoryInjection)repository).SetContext(_context);
+            ((IRepositoryInjection) repository)?.SetContext(_context);
             return repository;
         }
 
@@ -97,7 +95,7 @@ namespace CoreLibrary.EntityFramework
                 {
                     if (_context != null)
                     {
-                        if (_context.Database.GetDbConnection().State == System.Data.ConnectionState.Open)
+                        if (_context.Database.GetDbConnection().State == ConnectionState.Open)
                         {
                             _context.Database.CurrentTransaction?.Dispose();
                             _context.Database.GetDbConnection().Close();
@@ -134,7 +132,7 @@ namespace CoreLibrary.EntityFramework
 
         public void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
-            if (_context.Database.GetDbConnection().State != System.Data.ConnectionState.Open)
+            if (_context.Database.GetDbConnection().State != ConnectionState.Open)
             {
                 _context.Database.GetDbConnection().Open();
             }

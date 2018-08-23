@@ -4,10 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreLibrary.AutoFac;
+using CoreLibrary.BusinessLogic.Service;
+using CoreLibrary.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using CoreLibrary.Test.Models;
-using CoreLibrary.Test.Repository;
-using CoreLibrary.Test.Service;
+using CoreLibrary.Core.ViewModel;
 
 namespace CoreLibrary.Test.Controllers
 {

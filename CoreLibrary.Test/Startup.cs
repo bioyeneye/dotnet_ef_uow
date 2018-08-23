@@ -1,48 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
 using CoreLibrary.AutoFac;
-using CoreLibrary.DataContext;
-using CoreLibrary.EntityFramework;
-using CoreLibrary.Extensions;
-using CoreLibrary.Repositories;
+using CoreLibrary.BusinessLogic.Service;
+using CoreLibrary.Data.EF;
+using CoreLibrary.Data.Repositories;
 using CoreLibrary.Test.AppStart;
-using CoreLibrary.Test.EF;
-using CoreLibrary.Test.Extension;
-using CoreLibrary.Test.Repository;
-using CoreLibrary.UnitOfWork;
+using CoreLibrary.Test.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace CoreLibrary.Test
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
+            HostingEnvironment = env;
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
+        public static IConfiguration Configuration { get; set; }
         public IContainer ApplicationContainer { get; private set; }
-       
+        private IHostingEnvironment HostingEnvironment { get; }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ProjectmeetingContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -57,21 +50,38 @@ namespace CoreLibrary.Test
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Error;
                 });
 
-            
-            services.RegisterLibraryServices();
+            var connection = Configuration["Data:SqlServerConnectionString"];
+            services.AddIdentityDbContext<ApplicationDbContext>(connection);
+            services.AddDbContext<ProjectmeetingContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString(connection)));
+
+            services.RegisterLibraryServices<ProjectmeetingContext, MeetingRepository, MeetingService>();
+            /*services.RegisterApplicationRepository<MeetingRepository>();
+            services.RegisterApplicationServices<MeetingService>();*/
+            services.AddIdentity();
+            services.AddOpenIddict(HostingEnvironment);
+            services.RegisterBasicDiFromLibrary();
+            services.RegisterCustomServices(); 
 
             var builder = new ContainerBuilder();
-            builder.RegisterLibraryDependencies<ProjectmeetingContext>();
             builder.Populate(services);
-            this.ApplicationContainer = builder.Build();
+            
+            ApplicationContainer = builder.Build();
             ApplicationContainer.SetLifetimeScope();
+             
+            Mapper.Initialize(cfg =>
+            {
+                cfg.AddProfile<AutoMapperProfile>();
+            });
 
-            return new AutofacServiceProvider(this.ApplicationContainer);
+            return new AutofacServiceProvider(ApplicationContainer);
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env
+            ,ILoggerFactory loggerFactory
+            , IServiceProvider svp)
         {
             if (env.IsDevelopment())
             {
@@ -86,11 +96,8 @@ namespace CoreLibrary.Test
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
-            //library 
-            app.UseSession();
-            ApplicationContext.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
-
+            app.UseAuthentication();
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

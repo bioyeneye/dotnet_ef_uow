@@ -6,15 +6,20 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
+    <PackageReference Include="AutoMapper" Version="5.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1" />
+    <PackageReference Include="NetCore.AutoRegisterDi" Version="1.0.0" />
+    <PackageReference Include="OpenIddict" Version="2.0.0-rc3-final" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="2.0.0-rc3-final" />
+    <PackageReference Include="OpenIddict.Mvc" Version="2.0.0-rc3-final" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CoreLibrary.BusinessLogic\CoreLibrary.BusinessLogic.csproj" />
+    <ProjectReference Include="..\CoreLibrary.Core\CoreLibrary.Core.csproj" />
+    <ProjectReference Include="..\CoreLibrary.Data\CoreLibrary.Data.csproj" />
     <ProjectReference Include="..\CoreLibrary\CoreLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\EF\" />
   </ItemGroup>
 
 </Project>
